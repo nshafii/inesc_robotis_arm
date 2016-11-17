@@ -1,0 +1,32 @@
+#ifndef cat_move_to_target_ROBOT_STATE_H
+#define cat_move_to_target_ROBOT_STATE_H
+
+/*****************************************************************************
+** Includes
+*****************************************************************************/
+
+#include <ros/ros.h>
+#include <vector>
+#include <string>
+#include <sstream>
+
+/*****************************************************************************
+** Class [ROBOT_STATE]
+*****************************************************************************/
+
+class Robot_State{
+
+public:
+
+    sensor_msgs::JointState getJointStates();
+    setJointStates(sensor_msgs::JointState& js); 
+
+private:
+
+    sensor_msgs::JointState joint_states_;
+
+};
+
+
+#endif // cat_move_to_target_ROBOT_STATE_H
+

@@ -1,0 +1,20 @@
+<launch>
+
+<!-- OPENNI2 LAUNCH -->
+<include file="$(find openni2_launch)/launch/openni2.launch">
+</include>
+
+<!-- April Tags LAUNCH -->
+<include file="$(find apriltags)/launch/apriltags.launch">
+</include>
+
+<include file="$(find cat_move_to_target)/launch/robot_tf_publishing.launch">
+</include>
+
+<!--
+<include file="$(find cat_move_to_target)/launch/tags_tf_publishing.launch">
+</include>
+-->
+
+
+</launch>

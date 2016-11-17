@@ -1,0 +1,33 @@
+<launch>
+
+	<!--Launch Robot Controller -->
+	<include file="$(find robotis_controller)/launch/robotis_another.launch">
+	</include>
+
+  <arg name="db" default="false" />
+  <arg name="debug" default="false" />
+
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <include file="$(find robotis_manipulator_h_moveit)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <!-- Given the published joint states, publish tf for the robot links -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
+  <include file="$(find robotis_manipulator_h_moveit)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>  
+    <arg name="fake_execution" value="true"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+	<!-- Launch Robot Initializer -->
+	<node pkg="cat_manipulator_control" type="my_init_robot" name="init_robot" output="screen"/> 
+
+	<!-- Launch Inverse Kin Service -->
+	<node pkg="cat_move_to_target" type="gotoxyz_service" name="gotoxyz_service" output="screen"/> 
+
+
+</launch>

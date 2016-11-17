@@ -1,0 +1,15 @@
+int16 tag_id
+---
+float64 pos_x
+float64 pos_y
+float64 pos_z
+float64 ori_x
+float64 ori_y
+float64 ori_z
+float64 ori_w
+float64 w_pos_x
+float64 w_pos_y
+float64 w_pos_z
+bool foundtag
+int16 tag_id
+

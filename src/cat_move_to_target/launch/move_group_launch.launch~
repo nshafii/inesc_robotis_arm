@@ -1,0 +1,14 @@
+<launch>
+
+<node pkg="tf" type="static_transform_publisher" name="camera_link_to_world" args="
+-0.680953
+-0.280586
+ 0.732491
+ -0.0779462
+ 0.261913
+ 0.308629
+ 0.91104
+ world camera_link 50" />
+
+</launch>
+

@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/devel
+
+Name: cat_move_to_target
+Description: Description of cat_move_to_target
+Version: 0.0.0
+Cflags: -I/home/cat/robotnik_arm/devel/include -I/home/cat/robotnik_arm/src/cat_move_to_target/include
+Libs: -L/home/cat/robotnik_arm/devel/lib -lcat_move_to_target
+Requires: message_runtime

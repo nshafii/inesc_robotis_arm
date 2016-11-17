@@ -1,0 +1,7 @@
+to run calibration : 
+
+roslaunch cat_robotcam_calibration backFunction_calibration.launch
+
+roslaunch cat_robotcam_calibration run_calibration.launch
+
+

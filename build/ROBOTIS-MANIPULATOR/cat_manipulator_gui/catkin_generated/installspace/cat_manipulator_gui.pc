@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/install
+
+Name: cat_manipulator_gui
+Description: Description of cat_manipulator_gui
+Version: 0.1.0
+Cflags: -I/home/cat/robotnik_arm/install/include
+Libs: -L/home/cat/robotnik_arm/install/lib 
+Requires: roscpp geometry_msgs

@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/install
+
+Name: robotis_controller
+Description: Description of robotis_controller
+Version: 0.1.1
+Cflags: -I/home/cat/robotnik_arm/install/include
+Libs: -L/home/cat/robotnik_arm/install/lib 
+Requires: roscpp sensor_msgs std_msgs

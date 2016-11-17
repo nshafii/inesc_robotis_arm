@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/devel
+
+Name: robotis_manipulator_h_gui
+Description: Description of robotis_manipulator_h_gui
+Version: 0.1.0
+Cflags: -I/home/cat/robotnik_arm/src/ROBOTIS-MANIPULATOR/robotis_manipulator_h_gui/include
+Libs: -L/home/cat/robotnik_arm/devel/lib 
+Requires: roscpp geometry_msgs

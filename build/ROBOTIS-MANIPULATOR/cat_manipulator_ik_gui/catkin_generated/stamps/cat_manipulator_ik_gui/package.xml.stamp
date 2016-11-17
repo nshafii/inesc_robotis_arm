@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package>
+<name>cat_manipulator_ik_gui</name>
+<version>0.1.0</version>
+<description>
+
+     cat_manipulator_ik_gui
+
+  </description>
+  <maintainer email="cat@gmail.com">thor</maintainer>
+  <author>thor</author>
+  <license>BSD</license>
+  <!-- <url type="bugtracker">https://github.com/stonier/qt_ros/issues</url> -->
+  <!-- <url type="repository">https://github.com/stonier/qt_ros</url> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>qt_build</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>libqt4-dev</build_depend>
+  <build_depend>moveit_msgs</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+    <build_depend>cat_move_to_target</build_depend>
+
+  <run_depend>qt_build</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>libqt4-dev</run_depend>
+  <run_depend>moveit_msgs</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>moveit_fake_controller_manager</run_depend>
+  <run_depend>moveit_ros_planning_interface</run_depend>
+  <run_depend>moveit_ros_perception</run_depend>
+    <run_depend>cat_move_to_target</run_depend>
+
+
+
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>eigen_conversions</build_depend>
+
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>eigen_conversions</run_depend>
+
+</package>

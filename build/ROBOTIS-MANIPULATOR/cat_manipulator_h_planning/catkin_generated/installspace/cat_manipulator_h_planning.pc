@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/install
+
+Name: cat_manipulator_h_planning
+Description: Description of cat_manipulator_h_planning
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cat/robotnik_arm/install/lib 
+Requires: 

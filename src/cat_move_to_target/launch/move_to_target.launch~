@@ -1,0 +1,6 @@
+<launch>
+
+	<node pkg="cat_robotcam_calibration" type="robot_camera_calibration" name="robot_camera_calibration" output="screen"/> 
+
+	<node pkg="cat_robotcam_calibration" type="transformConverter" name="transformConverter" output="screen"/> 
+</launch>

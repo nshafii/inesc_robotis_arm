@@ -1,0 +1,411 @@
+#include <ros/ros.h>
+#include <cat_common/cloud_common.h>
+
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
+
+#include <geometry_msgs/PoseArray.h>
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
+#include <boost/make_shared.hpp>
+
+#include <sensor_msgs/JointState.h>
+
+#include <apriltags/AprilTagDetections.h>
+
+#include <tf/tf.h>
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include "tf2_ros/buffer.h"
+#include <geometry_msgs/TransformStamped.h>
+
+#define STOP_ROBOT 0
+#define MOVE_ROBOT 1
+#define CHANGE_ROBOT_POSITION 2
+#define DETECT_TRANSFORM 3
+#define TAG_ID 5
+
+
+ros::Publisher pub_tag_pose_array;
+ros::Publisher pub_targetTag_pose;
+ros::Publisher pub_robot_joints;
+
+ros::Subscriber sub_robot_joints ;
+
+int move_robot_to_calibrate; //0 - don't move, 1- move, 2 - change state
+int target_pose_id; // #pose
+ros::Subscriber sub_apriltags_detection ;
+
+std::vector <geometry_msgs::TransformStamped> tf_cameraToBase;
+
+geometry_msgs::Pose previous_targetTagPose;
+
+
+// (0) subscribe to image and show it (done by 14:32, problems with visualizer in common)
+// (1) find tag
+// (2) find tag pose
+// (3) find conversion from tag pose and robot joint
+// (4) find conversion from joint to base frame
+// (5) find conversion from camera-end effector
+
+
+//CloudClass cloud;
+//void calibration_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg){
+//    cloud.loadCloud(cloud_msg);
+//    cloud.showOriginalCloud(true);
+//}
+
+
+void clearPreviousTagPose(){
+    previous_targetTagPose.orientation.x = 0;
+    previous_targetTagPose.orientation.y = 0;
+    previous_targetTagPose.orientation.z = 0;
+    previous_targetTagPose.orientation.w = 0;
+    previous_targetTagPose.position.x = 0;
+    previous_targetTagPose.position.y = 0;
+    previous_targetTagPose.position.z = 0;
+}
+
+void updateRobotAction(){
+
+    if(target_pose_id != 7 & move_robot_to_calibrate == CHANGE_ROBOT_POSITION)
+    {
+        target_pose_id += 1;
+        move_robot_to_calibrate = MOVE_ROBOT;
+        clearPreviousTagPose();
+        std::cout << "Moving to pose " << target_pose_id << std::endl;
+    }
+    else if(move_robot_to_calibrate == CHANGE_ROBOT_POSITION)
+    {
+        target_pose_id = 0 ;
+        move_robot_to_calibrate = MOVE_ROBOT;
+     }
+}
+
+void cameraRGBtoBaseFrame(geometry_msgs::TransformStamped& tf_geomMsg){
+
+    tf::TransformListener listener;
+    tf::StampedTransform transformListen;
+
+    ros::Duration(5.0).sleep();
+
+    bool found_tf = false;
+
+    try{
+        listener.waitForTransform("camera_link_aux", "world", ros::Time(), ros::Duration(1.0) );
+        listener.lookupTransform("camera_link_aux", "world", ros::Time(), transformListen);
+        found_tf = true;
+    }
+    catch (tf::TransformException &ex) {
+        ROS_WARN("%s",ex.what());
+        ros::Duration(1.0).sleep();
+        found_tf = false;
+    }
+
+    if(found_tf){
+
+        // to make it stable, retrieve again again
+
+        listener.waitForTransform("camera_link_aux", "world", ros::Time(), ros::Duration(1.0) );
+        listener.lookupTransform("camera_link_aux", "world", ros::Time(), transformListen);
+        tf::transformStampedTFToMsg(transformListen, tf_geomMsg);
+
+        tf_cameraToBase.push_back(tf_geomMsg);
+
+        std::cout << "****************************************" <<std::endl;
+        std::cout << "cam -> world *****************************" <<std::endl;
+        std::cout << tf_geomMsg <<std::endl;
+        std::cout << "****************************************" <<std::endl;
+
+
+        ROS_INFO(" CHANGE_ROBOT_POSITION ");
+        move_robot_to_calibrate = CHANGE_ROBOT_POSITION;
+
+        updateRobotAction();
+    }
+}
+
+
+void poseStampedToTf(const geometry_msgs::PoseStamped& pose_msg){
+
+    tf2_ros::StaticTransformBroadcaster sTfBr;
+
+    //------------
+    ROS_INFO("Sending the tf!");
+    geometry_msgs::TransformStamped tf_pose;
+
+    tf_pose.transform.translation.x = pose_msg.pose.position.x;
+    tf_pose.transform.translation.y = pose_msg.pose.position.y;
+    tf_pose.transform.translation.z = pose_msg.pose.position.z;
+    tf_pose.transform.rotation.x = pose_msg.pose.orientation.x;
+    tf_pose.transform.rotation.y = pose_msg.pose.orientation.y;
+    tf_pose.transform.rotation.z = pose_msg.pose.orientation.z;
+    tf_pose.transform.rotation.w = pose_msg.pose.orientation.w;
+    tf_pose.header.stamp = ros::Time::now();
+    tf_pose.header.frame_id = "camera_rgb_optical_frame";
+    tf_pose.child_frame_id = "target_tag";
+    sTfBr.sendTransform(tf_pose);
+
+   geometry_msgs::TransformStamped tf_cameraToBaseFrame;
+   cameraRGBtoBaseFrame(tf_cameraToBaseFrame);
+   ROS_INFO("Camera RGB to base Frame");
+   std::cout << tf_cameraToBaseFrame << std::endl;
+
+
+}
+
+void calibrateRobot(){
+
+    ROS_INFO("--------------------------------------");
+    ROS_INFO("Starting calibration");
+    ROS_INFO("--------------------------------------");
+
+    ROS_INFO(" tf_cameraToBaseFrame ");
+
+    int size_tfs = tf_cameraToBase.size();
+
+    std::cout << " Size of tf_cameraToBase : " << size_tfs << "/n";
+
+    for(int i =1 ;  i < size_tfs; i++)
+        std::cout << tf_cameraToBase[i] << std::endl;
+
+    geometry_msgs::TransformStamped tf_final;
+    for(int i =1 ;  i <= size_tfs; i++){
+        if(i == size_tfs){
+            tf_final.transform.translation.x /= i-1;
+            tf_final.transform.translation.y /= i-1;
+            tf_final.transform.translation.z /= i-1;
+            tf_final.transform.rotation.x /= i-1;
+            tf_final.transform.rotation.y /= i-1;
+            tf_final.transform.rotation.z /= i-1;
+            tf_final.transform.rotation.w /= i-1;
+        }
+        else
+        {
+            tf_final.transform.translation.x += (tf_cameraToBase[i]).transform.translation.x;
+            tf_final.transform.translation.y += (tf_cameraToBase[i]).transform.translation.y;
+            tf_final.transform.translation.z += (tf_cameraToBase[i]).transform.translation.z;
+            tf_final.transform.rotation.x += (tf_cameraToBase[i]).transform.rotation.x;
+            tf_final.transform.rotation.y += (tf_cameraToBase[i]).transform.rotation.y;
+            tf_final.transform.rotation.z += (tf_cameraToBase[i]).transform.rotation.z;
+            tf_final.transform.rotation.w += (tf_cameraToBase[i]).transform.rotation.w;
+        }
+    }
+
+    tf_final.header = tf_cameraToBase[0].header;
+    tf_final.header.stamp = ros::Time::now();
+
+    ROS_INFO("--------------------------------------");
+    ROS_INFO("FINAL TF");
+    ROS_INFO("--------------------------------------");
+
+    std::cout << tf_final << std::endl;
+
+
+}
+
+bool checkForTagStability(const geometry_msgs::Pose& pose1, const geometry_msgs::Pose& pose2, double error_allowed)
+{
+    if(fabs(pose1.position.x - pose2.position.x) < error_allowed &
+       fabs(pose1.position.y - pose2.position.y) < error_allowed &
+       fabs(pose1.position.z - pose2.position.z) < error_allowed &
+       fabs(pose1.orientation.x - pose2.orientation.x) < error_allowed &
+       fabs(pose1.orientation.y - pose2.orientation.y) < error_allowed &
+       fabs(pose1.orientation.z - pose2.orientation.z) < error_allowed &
+       fabs(pose1.orientation.w - pose2.orientation.w) < error_allowed)
+    {
+        return true;
+
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void apriltags_detections(const apriltags::AprilTagDetections::ConstPtr& msg){
+
+    ROS_INFO(" *************** Detection *****************");
+
+    apriltags::AprilTagDetection this_tag_detection;
+
+    geometry_msgs::PoseArray tag_pose;
+    geometry_msgs::Pose this_tag_pose;
+    geometry_msgs::PoseStamped target_tag_pose;
+
+    ROS_INFO("*************************");
+    for (unsigned int i=0; i< ((msg->detections).size()); ++i)
+    {
+        this_tag_detection = (msg->detections)[i];
+        if (this_tag_detection.id == 3)
+           std::cout << this_tag_detection.pose << std::endl;
+    }
+
+    tag_pose.header = msg->header;
+    double error_allowed = 0.0002;
+    for (unsigned int i=0; i< ((msg->detections).size()); ++i)
+    {
+        this_tag_detection = (msg->detections)[i];
+
+        // std::cout << " ************************* " << std::endl;
+        // std::cout << " Tag id : " << this_tag_detection.id << std::endl;
+
+        this_tag_pose= this_tag_detection.pose;
+        tag_pose.poses.push_back(this_tag_pose);
+
+        if (this_tag_detection.id == TAG_ID)
+        {
+            if(checkForTagStability(this_tag_pose, previous_targetTagPose, error_allowed))
+            {
+                previous_targetTagPose = this_tag_pose;
+                target_tag_pose.pose.orientation = this_tag_pose.orientation;
+                target_tag_pose.pose.position = this_tag_pose.position;
+                target_tag_pose.header = tag_pose.header;
+                poseStampedToTf(target_tag_pose);
+            }
+            else
+                previous_targetTagPose = this_tag_pose;
+        }
+    }
+    pub_tag_pose_array.publish(tag_pose);
+
+}
+
+void move_robot_callback(const sensor_msgs::JointState::ConstPtr& current_joint_states)    {
+    if(move_robot_to_calibrate == MOVE_ROBOT)
+    {
+         ROS_INFO("Move robot indeed");
+        //        std::cout << "Pose : " << current_joint_states->position[0] << " , "
+        //                  << current_joint_states->position[1] << " , "
+        //                  << current_joint_states->position[2] << " , "
+        //                  << current_joint_states->position[3] << " , "
+        //                  << current_joint_states->position[4] << " , "
+        //                  << current_joint_states->position[5] << " , "
+        //                  << current_joint_states->position[6] << std::endl;
+
+        sensor_msgs::JointState msg;
+        msg.header.stamp = ros::Time::now();
+        int num_joints = 6;
+        msg.name.resize(num_joints);
+        msg.position.resize(num_joints);
+
+        msg.name[0] = "joint1";
+        msg.name[1] = "joint2";
+        msg.name[2] = "joint3";
+        msg.name[3] = "joint4";
+        msg.name[4] = "joint5";
+        msg.name[5] = "joint6";
+
+        msg.position[3] = 0.03;
+        msg.position[4] = 1.35;
+        msg.position[5] = 1.43;
+
+        if ( target_pose_id == 1 ){
+            ROS_INFO("Going to Pose 1");
+            msg.position[0] = -2.65;
+            msg.position[1] = -0.1;
+            msg.position[2] = 0.8;
+        }
+        else if (target_pose_id == 2){
+            ROS_INFO("Going to Pose 2");
+            msg.position[0] = -2.7;
+            msg.position[1] = -0.1;
+            msg.position[2] = 0.8;
+        }
+        else if (target_pose_id == 3){
+            ROS_INFO("Going to Pose 3");
+            msg.position[0] = -2.75;
+            msg.position[1] = -0.1;
+            msg.position[2] = 0.8;
+        }
+        else if (target_pose_id == 4){
+            ROS_INFO("Going to Pose 4");
+            msg.position[0] = -2.75;
+            msg.position[1] = 0;
+            msg.position[2] = 0.7;
+        }
+        else if (target_pose_id == 5){
+            ROS_INFO("Going to Pose 5");
+            msg.position[0] = -2.7;
+            msg.position[1] = 0;
+            msg.position[2] = 0.7;
+        }
+        else if (target_pose_id == 6){
+            ROS_INFO("Going to Pose 6");
+            msg.position[0] = -2.65;
+            msg.position[1] = 0;
+            msg.position[2] = 0.7;
+        }
+        else if ( target_pose_id == 7 ){
+            ROS_INFO("Going to Pose 1");
+            msg.position[0] = -2.65;
+            msg.position[1] = -0.1;
+            msg.position[2] = 0.8;
+        }
+        else{
+            ROS_INFO("Going REST");
+            msg.position[0] = -1.6;
+            msg.position[1] = 0.0;
+            msg.position[2] = 0.73;
+            sub_robot_joints.shutdown();
+            sub_apriltags_detection.shutdown();
+            calibrateRobot();
+        }
+        pub_robot_joints.publish(msg);
+
+        // check if robot moved
+        double error_allowed = 0.1;
+        if ( fabs(msg.position[0] - current_joint_states->position[0]) < error_allowed &
+             fabs(msg.position[1] - current_joint_states->position[1]) < error_allowed &
+             fabs(msg.position[2] - current_joint_states->position[2]) < error_allowed &
+             fabs(msg.position[3] - current_joint_states->position[3]) < error_allowed &
+             fabs(msg.position[4] - current_joint_states->position[4]) < error_allowed &
+             fabs(msg.position[5] - current_joint_states->position[5]) < error_allowed)
+        {
+            ROS_INFO("CHECKUP : Robot Moved");
+            ros::Duration(3.0).sleep();
+
+            move_robot_to_calibrate = DETECT_TRANSFORM;
+        }
+        else
+        {
+            move_robot_to_calibrate = MOVE_ROBOT;
+        }
+
+    }
+}
+
+
+
+
+int main(int argc, char** argv){
+
+   move_robot_to_calibrate = MOVE_ROBOT;
+   target_pose_id = 1 ;
+
+   ros::init(argc, argv, "robot_camera_calibration");
+
+   ros::NodeHandle nh;
+//   ros::Subscriber sub_image = nh.subscribe("camera/depth/points", 1, calibration_cb);
+
+   sub_apriltags_detection = nh.subscribe("/apriltags/detections", 1, apriltags_detections);
+
+   sub_robot_joints = nh.subscribe("/joint_states",1, move_robot_callback);
+
+   pub_tag_pose_array = nh.advertise<geometry_msgs::PoseArray>("tag_pose",1);
+   pub_targetTag_pose = nh.advertise<geometry_msgs::PoseStamped>("tag3_pose",1);
+
+   pub_robot_joints = nh.advertise<sensor_msgs::JointState>("/controller_joint_states",1);
+
+//   while(ros::ok())
+//   {
+       ros::spin();
+//   }
+
+   return 0;
+
+}

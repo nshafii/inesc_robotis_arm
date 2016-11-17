@@ -1,0 +1,86 @@
+<launch>
+
+<!-- static_transform_publisher x y z yaw pitch roll frame_id child_frame_id period_in_ms
+
+Publish a static coordinate transform to tf using an x/y/z offset in meters and yaw/pitch/roll in radians. (yaw is rotation about Z, pitch is rotation about Y, and roll is rotation about X). The period, in milliseconds, specifies how often to send a transform. 100ms (10hz) is a good value. -->
+
+<!-- Table -->
+<!-- Rotation in Table : 3.14159265359 0 0 -->
+
+<!-- TAG 0-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag0" 
+args="
+0.7005 0.024 0.0
+3.14159265359 0 0
+worldTB 
+calibtag0
+1000"/> 
+<!-- TAG 1-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag1" 
+args="
+0.40 0.024 0.0
+3.14159265359 0 0
+worldTB 
+calibtag1
+1000"/>  
+<!-- TAG 2-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag2" 
+args="
+0.2495 0.024 0.0
+3.14159265359 0 0
+worldTB 
+calibtag2
+1000"/> 
+<!-- TAG 3-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag11" 
+args="
+0.402 0.19 0.0
+3.14159265359 0 0
+worldTB 
+calibtag11
+1000"/> 
+
+<!-- UP -->
+<!-- Rotation up : 0 1.57079632679 -1.57079632679 -->
+
+<!-- TAG 4-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag4" 
+args="
+0.449 -0.004 0.16627
+0 1.57079632679 -1.57079632679
+worldTB 
+calibtag4
+1000"/> 
+
+<!-- TAG 5-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag5" 
+args="
+0.449 -0.004 0.11877
+0 1.57079632679 -1.57079632679
+worldTB 
+calibtag5
+1000"/> 
+
+
+<!-- TAG 6-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag6" 
+args="
+0.449 -0.004 0.07127
+0 1.57079632679 -1.57079632679
+worldTB 
+calibtag6
+1000"/> 
+
+
+<!-- TAG 7-->
+<node pkg="tf" type="static_transform_publisher" name="worldTB_to_calibtag7" 
+args="
+0.449 -0.004 0.02377
+0 1.57079632679 -1.57079632679
+worldTB 
+calibtag7
+1000"/> 
+
+</launch>
+
+

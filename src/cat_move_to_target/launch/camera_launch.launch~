@@ -1,0 +1,12 @@
+<launch>
+
+<!-- OPENNI2 LAUNCH -->
+	<include file="$(find openni2_launch)/launch/openni2.launch">
+	</include>
+
+	<!-- April Tags LAUNCH -->
+	<include file="$(find apriltags)/launch/apriltags.launch">
+	</include>
+
+
+</launch>

@@ -1,0 +1,8 @@
+prefix=/home/cat/robotnik_arm/devel
+
+Name: cat_manipulator_ik_gui
+Description: Description of cat_manipulator_ik_gui
+Version: 0.1.0
+Cflags: -I/home/cat/robotnik_arm/src/ROBOTIS-MANIPULATOR/cat_manipulator_ik_gui/include
+Libs: -L/home/cat/robotnik_arm/devel/lib 
+Requires: roscpp geometry_msgs

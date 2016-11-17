@@ -1,0 +1,71 @@
+#include "ros/ros.h"
+#include "cat_move_to_target/GetJointState.h"
+
+#include <ros/ros.h>
+#include <iostream>
+#include <cmath>
+
+#include <tf/tf.h>
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+
+//  Includes opencv to process in cv::Mat
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/opencv.hpp>
+
+#define LINK1_TO_LINK2 0.159
+#define LINK2_TO_LINK3  0.26569 //sqrt(264²+30²)
+#define LINK3_TO_LINK4  0.25974 //sqrt(258²+30²)
+#define LINK6_TO_EEF 0.123 //645-258-264 //
+
+
+bool getJointState(cat_move_to_target::GetJointState::Request &req,
+         cat_move_to_target::GetJointState::Response &res)
+{
+
+    geometry_msgs::PoseStamped pos;
+    pos.pose.position.x = req.pos_x;
+    pos.pose.position.y = req.pos_y;
+    pos.pose.position.z = req.pos_z;
+    pos.pose.orientation.x = req.ori_x;
+    pos.pose.orientation.y = req.ori_y;
+    pos.pose.orientation.z = req.ori_z;
+    pos.pose.orientation.w = req.ori_w;
+
+    std::vector<double>joint_values(6);
+
+    calculateJointValues(pos, joint_values, req.hardcoded_wrist);
+
+    for (int i=0 ; i<6 ; i++)
+        std::cout << "Theta " << i+1 << " : " << joint_values[i] << std::endl;
+
+    res.theta1 = joint_values[0];
+    res.theta2 = joint_values[1];
+    res.theta3 = joint_values[2];
+    res.theta4 = joint_values[3];
+    res.theta5 = joint_values[4];
+    res.theta6 = joint_values[5];
+
+    ROS_INFO("request: pos_x=%3.4f, pos_y=%6.4f, pos_z=%3.4f", req.pos_x, req.pos_y, req.pos_z);
+    ROS_INFO("sending back response: [%3.4f %3.4f %3.4f]", res.theta1, res.theta2, res.theta3);
+
+
+    return true;
+}
+
+
+int main(int argc, char** argv){
+
+    ros::init(argc, argv, "get_joint_values");
+
+    ros::NodeHandle n;
+
+    ros::ServiceServer service = n.advertiseService("get_joint_state", getJointState);
+    ROS_INFO("Ready to send joint values");
+    ros::spin();
+
+    return 0;
+}
