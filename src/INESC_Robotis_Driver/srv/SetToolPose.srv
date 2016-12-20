@@ -1,0 +1,9 @@
+float64 pos_x
+float64 pos_y
+float64 pos_z
+float64 Yaw_angle_z
+float64 Pitch_angle_y
+float64 Roll_angle_x
+float64 linear_velocity
+---
+int32 result

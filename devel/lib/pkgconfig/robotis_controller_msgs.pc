@@ -1,8 +1,0 @@
-prefix=/home/cat/robotnik_arm/devel
-
-Name: robotis_controller_msgs
-Description: Description of robotis_controller_msgs
-Version: 0.1.0
-Cflags: -I/home/cat/robotnik_arm/devel/include
-Libs: -L/home/cat/robotnik_arm/devel/lib 
-Requires: sensor_msgs std_msgs

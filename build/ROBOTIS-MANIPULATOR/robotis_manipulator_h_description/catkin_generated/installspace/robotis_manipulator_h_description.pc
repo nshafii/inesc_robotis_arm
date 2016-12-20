@@ -1,8 +1,0 @@
-prefix=/home/cat/robotnik_arm/install
-
-Name: robotis_manipulator_h_description
-Description: Description of robotis_manipulator_h_description
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/cat/robotnik_arm/install/lib 
-Requires: 

@@ -1,0 +1,24 @@
+<launch>
+
+<!--Launch Robotis Controller -->
+<include file="$(find robotis_controller)/launch/robotis_another.launch">
+</include>
+
+<arg name="db" default="false" />
+<arg name="debug" default="false" />
+
+<!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+<include file="$(find robotis_manipulator_h_moveit)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+</include>
+
+<!-- Given the published joint states, publish tf for the robot links and TF-->
+<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+<!-- Launch Robot Initializer initial the robot by seting the torque control parameter to be true-->
+<node pkg="cat_manipulator_control" type="my_init_robot" name="init_robot" output="screen"/> 
+
+<!-- Launch Go to Pose service Service which has the trajectory planing forward and inverse control-->
+<node pkg="INESC_Robotis_Driver" type="GoToPose_service" name="GoToPose_service" output="screen"/> 
+
+</launch>
