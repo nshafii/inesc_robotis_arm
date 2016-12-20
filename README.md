@@ -10,19 +10,20 @@ and initially forked from the following repository:
 https://github.com/catppinto/robotnik_arm
 
 
-#For installing the package:
+##For installing the package:
 
 Prerequisite: ros-indigo base, sudo apt-get install ros-indigo-desktop-full
 
 In the root directory: catkin_make -j1
 
 
-#For running the driver:
+##For running the driver
 
 source devel/setup.bash
+
 roslaunch INESC_Robotis_Driver robot_init.launch
 
-The ROS services provided by the driver:
+*The ROS services provided by the driver:*
 
 setToolPose (Move the tool position to a desired pose using trajectory planning and IK)
 
@@ -38,11 +39,11 @@ The more information about the services can be found in the ReadMe of the driver
 
 
 
-For visualizing the robot: (optional)
+*For visualizing the robot: (optional)*
 
 rosrun rviz rvis 
 
-For using a GUI to command the robot: (optional)
+*For using a GUI to command the robot: (optional)*
 
 rosrun cat_manipulator_gui cat_manipulator_gui 
 
