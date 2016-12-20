@@ -1,0 +1,10 @@
+
+<launch>
+    <node name="robotis_manager" pkg="robotis_controller" type="robotis_manager" output="screen">     
+        <rosparam command="load" file="$(find robotis_controller)/launch/ROBOTIS-manipulatorH.yaml" />
+        <rosparam param="joint_state_publish_rate">125</rosparam> 
+        <rosparam param="publish_joint_topic_name">"/joint_states"</rosparam>
+        <rosparam param="subscribe_joint_topic_name">"/controller_joint_states"</rosparam> 
+    </node>
+
+</launch> 

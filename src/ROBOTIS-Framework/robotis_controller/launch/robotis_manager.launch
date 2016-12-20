@@ -1,0 +1,6 @@
+
+<launch>
+    <node name="robotis_manager" pkg="robotis_controller" type="robotis_manager" output="screen">
+        <rosparam command="load" file="$(find robotis_example)/launch/ROBOTIS-OP2.yaml" />
+    </node>
+</launch> 

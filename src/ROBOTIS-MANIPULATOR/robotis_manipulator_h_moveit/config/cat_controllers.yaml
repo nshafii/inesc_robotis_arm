@@ -1,0 +1,21 @@
+#not tested
+
+controller_list:
+  - name: arm_controller
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
+  - name: gripper_controller
+    action_ns: gripper_action
+    default: true
+    joints:
+      - gripper_joint
+     # - gripper_motor_screw_joint
+     # - gripper_motor_slider_joint
+

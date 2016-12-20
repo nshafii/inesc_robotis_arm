@@ -1,0 +1,111 @@
+port_num: 1
+serial_ports:
+    dxl_tty0:
+        port_name: "/dev/ttyUSB0"
+        baudrate: 1000000
+        dxl_num: 21
+        dxl0:
+            id: 200
+            model: "UNKNOWN"
+            protocol: 2.0
+            joint_name: "sub_controller"
+        dxl1:
+            id: 1
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_sho_pitch"
+        dxl2:
+            id: 2
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_sho_pitch"
+        dxl3:
+            id: 3
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_sho_roll"
+        dxl4:
+            id: 4
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_sho_roll"
+        dxl5:
+            id: 5
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_el"
+        dxl6:
+            id: 6
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_el"
+        dxl7:
+            id: 7
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_hip_yaw"
+        dxl8:
+            id: 8
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_hip_yaw"
+        dxl9:
+            id: 9
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_hip_roll"
+        dxl10:
+            id: 10
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_hip_roll"
+        dxl11:
+            id: 11
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_hip_pitch"
+        dxl12:
+            id: 12
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_hip_pitch"
+        dxl13:
+            id: 13
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_knee"
+        dxl14:
+            id: 14
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_knee"
+        dxl15:
+            id: 15
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_ank_pitch"
+        dxl16:
+            id: 16
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_ank_pitch"
+        dxl17:
+            id: 17
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "r_ank_roll"
+        dxl18:
+            id: 18
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "l_ank_roll"
+        dxl19:
+            id: 19
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "head_pan"
+        dxl20:
+            id: 20
+            model: "MX-28"
+            protocol: 2.0
+            joint_name: "head_tilt"

@@ -1,0 +1,338 @@
+<?xml version="1.0"?>
+<!-- Revolute-Revolute Manipulator -->
+<robot name="robotis_manipulator_h" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <!-- some parameters -->
+  <xacro:property name="pi" value="3.141592654" />
+
+  <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find robotis_manipulator_h_description)/urdf/robotis_manipulator_h.gazebo" />
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find robotis_manipulator_h_description)/urdf/materials.xacro" />
+
+  <!-- Used for fixing robot to Gazebo 'link 1' -->
+  <link name="world">
+  </link>
+
+  <joint name="world_fixed" type="fixed">
+    <parent link="world"/>
+    <child link="link1"/>
+  </joint>
+
+  <!-- link 1 -->
+  <link name="link1">
+    <collision>
+      <origin xyz="0 0 0.063" rpy="0 0 ${pi}"/>
+      <geometry>
+	<box size="0.06 0.06 0.126"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.936"/>
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 1 -->
+  <joint name="joint1" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0 0 0.126" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi}" upper="${0.9*pi}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- link 2 -->
+  <link name="link2">
+    <collision>
+      <origin xyz="0 0 0.033" rpy="0 0 ${pi}"/>
+      <geometry>
+	<box size="0.07 0.15 0.08"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.126" rpy="0 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.030"/>
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 2 -->
+  <joint name="joint2" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0 0 0.033" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.45}" upper="${pi*0.45}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- link 3 -->
+  <link name="link3">
+    <collision>
+      <origin xyz="0.02 0 0.15" rpy="0 0 ${pi}"/>
+      <geometry>
+	<box size="0.1 0.15 0.25"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.159" rpy="0 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_3.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.404"/>
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 3 -->
+  <joint name="joint3" type="revolute">
+    <parent link="link3"/>
+    <child link="link4"/>
+    <origin xyz="0.03 0.0 0.264" rpy="0 ${90.0*pi/180.0} 0" />
+    <axis xyz="0 1 0"/>
+    <limit velocity="15" effort="2000" lower="${-pi*0.4}" upper="${pi*0.7}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- link 4 -->
+  <link name="link4">
+    <collision>
+      <origin xyz="-0.01 0.0 0.1" rpy="0 0 ${pi}" />
+      <geometry>
+	<box size="0.1 0.15 0.25" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="-0.03 0 -0.423" rpy="0 0 ${pi}" />
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_4.stl" scale="0.001 0.001 0.001"/>
+      </geometry>  
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1.236" /> 
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 4 -->
+  <joint name="joint4" type="revolute">
+    <parent link="link4"/>
+    <child link="link5"/>
+    <origin xyz="-0.03 0.0 0.231" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.45}" upper="${pi*0.45}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran4">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- link 5 -->
+  <link name="link5">
+    <collision>
+      <origin xyz="0.0 0.0 0.03" rpy="0 0 ${pi}" />
+      <geometry>
+	<box size="0.06 0.13 0.09" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.654" rpy="0 0 ${pi}" />
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_5.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.491" /> 
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 5 -->
+  <joint name="joint5" type="revolute">
+    <parent link="link5"/>
+    <child link="link6"/>
+    <origin xyz="0.0 0.0 0.027" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.45}" upper="${pi*0.45}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran5">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- link 6 -->
+  <link name="link6">
+    <collision>
+      <origin xyz="0.0 0.0 0.08" rpy="0 0 ${pi}" />
+      <geometry>
+	<box size="0.07 0.07 0.08" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.681" rpy="0 0 ${pi}" />
+      <geometry>
+        <mesh filename="package://robotis_manipulator_h_description/meshes/link_6.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.454" /> 
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 6 -->
+  <joint name="joint6" type="revolute">
+    <parent link="link6"/>
+    <child link="end_effector"/>
+    <origin xyz="0.0 0.0 0.123" rpy="0 0 ${180.0*pi/180.0}" />
+    <axis xyz="0 0 1" />
+    <limit velocity="6.5" effort="1000" lower="${-pi*0.6}" upper="${pi*0.6}" />
+    <dynamics damping="0.7"/>
+  </joint>
+
+  <transmission name="tran6">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- End Effector -->
+  <link name="end_effector">
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>      
+        <box size = "0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>      
+        <box size = "0.01 0.01 0.01"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <mass value="0.001" /> 
+      <inertia
+	  ixx="1.0" ixy="0.0" ixz="0.0"
+	  iyy="1.0" iyz="0.0"
+	  izz="1.0"/>
+    </inertial>
+  </link>
+
+
+</robot>

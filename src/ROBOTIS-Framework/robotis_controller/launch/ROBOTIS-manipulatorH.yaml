@@ -1,0 +1,36 @@
+port_num: 1
+serial_ports:
+    dxl_tty0:
+        port_name: "/dev/ttyUSB0"
+        baudrate: 1000000
+        dxl_num: 7
+        dxl1:
+            id: 1
+            model: "H54-200-S500-R"
+            protocol: 2.0
+            joint_name: "joint1"
+        dxl2:
+            id: 2
+            model: "H54-200-S500-R"
+            protocol: 2.0
+            joint_name: "joint2"
+        dxl3:
+            id: 3
+            model: "H54-100-S500-R"
+            protocol: 2.0
+            joint_name: "joint3"
+        dxl4:
+            id: 4
+            model: "H54-100-S500-R"
+            protocol: 2.0
+            joint_name: "joint4"
+        dxl5:
+            id: 5
+            model: "H42-20-S300-R"
+            protocol: 2.0
+            joint_name: "joint5"
+        dxl6:
+            id: 6
+            model: "H42-20-S300-R"
+            protocol: 2.0
+            joint_name: "joint6"
