@@ -1,3 +1,5 @@
+## INESC robotis arm driver
+
 This package contains the driver sources and the implementation of the services can be found in GoToPose_service.cpp.
 
 Different services has been provided, including:
