@@ -1,18 +1,16 @@
-## INESC robotis arm driver
+## INESC ROBOTIS arm driver
 
 This package contains the driver sources and the implementation of the services can be found in GoToPose_service.cpp.
 
 Different services has been provided, including:
 
-1- /GoToPose_service/getJointValues 
-
-Get the current joints values in radians
+1. /GoToPose_service/getJointValues \\Get the current joints values in radians
          
-2- /GoToPose_service/getToolPos
+2. /GoToPose_service/getToolPos
  
 Get the pose of the end effectors in Cartesian position related to the base of the arm. The end-effectors rotation in Euler angle (Roll, Pitch, Yaw) in ZYX canonical Euler sequence.
 
-3- /GoToPose_service/setToolPose
+3. /GoToPose_service/setToolPose
   
 Command the trajectory planning and Inverse lnverse kinematics to move the arm to the asked pose with the input arguments:
 
