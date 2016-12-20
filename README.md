@@ -39,11 +39,11 @@ The more information about the services can be found in the ReadMe of the driver
 
 
 
-*For visualizing the robot: (optional)*
+** For visualizing the robot** (optional)
 
 rosrun rviz rvis 
 
-*For using a GUI to command the robot: (optional)*
+** For using a GUI to command the robot** (optional)
 
 rosrun cat_manipulator_gui cat_manipulator_gui 
 
