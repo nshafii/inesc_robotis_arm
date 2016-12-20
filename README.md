@@ -10,14 +10,14 @@ and initially forked from the following repository:
 https://github.com/catppinto/robotnik_arm
 
 
-##For installing the package:
+## For installing the package
 
 Prerequisite: ros-indigo base, sudo apt-get install ros-indigo-desktop-full
 
 In the root directory: catkin_make -j1
 
 
-##For running the driver
+## For running the driver
 
 source devel/setup.bash
 
