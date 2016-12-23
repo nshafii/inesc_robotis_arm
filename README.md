@@ -12,9 +12,14 @@ https://github.com/catppinto/robotnik_arm
 
 ## For installing the package
 
-Prerequisite: ros-indigo base, sudo apt-get install ros-indigo-desktop-full
+Prerequisite, ros-indigo packages:
 
-In the root directory: catkin_make -j1
+1. sudo apt-get install ros-indigo-desktop-full
+2. sudo apt-get install ros-indigo-qt-build
+3. sudo apt-get install ros-indigo-moveit-full
+
+Building the package:
+In the root directory, catkin_make -j1
 
 
 ## For running the driver
