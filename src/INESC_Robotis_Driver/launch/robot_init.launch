@@ -19,6 +19,6 @@
 <node pkg="cat_manipulator_control" type="my_init_robot" name="init_robot" output="screen"/> 
 
 <!-- Launch Go to Pose service Service which has the trajectory planing forward and inverse control-->
-<node pkg="INESC_Robotis_Driver" type="GoToPose_service" name="GoToPose_service" output="screen"/> 
+<node pkg="INESC_Robotis_Driver" type="GoToPose_service" name="GoToPose_service" output="log"/> 
 
 </launch>
