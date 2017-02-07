@@ -94,7 +94,7 @@ public:
         ADDR_POSITION_P_GAIN                            = P_POSITION_P_GAIN;
         ADDR_GOAL_POSITION                              = P_GOAL_POSITION;
         ADDR_GOAL_VELOCITY                              = P_GOAL_VELOCITY;
-        ADDR_GOAL_TORQUE                                = P_GOAL_TORQUE;
+        ADDR_GOAL_TORQUE                                = P_PRESENT_CURRENT;
         ADDR_PRESENT_POSITION                           = P_PRESENT_POSITION;
         ADDR_PRESENT_VELOCITY                           = P_PRESENT_VELOCITY;
         ADDR_PRESENT_LOAD                               = P_PRESENT_LOAD;

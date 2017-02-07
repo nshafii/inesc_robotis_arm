@@ -10,6 +10,7 @@
 
 
 #include <vector>
+#include <iostream>
 
 #include "../handler/BulkReadData.h"
 #include "../RobotisController.h"
@@ -37,6 +38,7 @@ public:
 	void runBulkRead();
 
 	bool getReadData(int id, int addr, long *data, int length = 0);
+	bool getReadCurrent(int id, int addr, long *data, int length = 0);
 
 	int syncWrite(int start_addr, int data_length, unsigned char* param, int param_length);
 };

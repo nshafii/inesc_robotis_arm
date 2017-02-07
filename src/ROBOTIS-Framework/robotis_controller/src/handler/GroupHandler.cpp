@@ -132,19 +132,22 @@ void GroupHandler::runBulkRead()
 
 bool GroupHandler::getReadData(int id, int addr, long *data, int length)
 {
-    if(addr <= 0 || length < 0)
-        return false;
+    if(addr <= 0 || length < 0){
+    	return false;
+    }
 
     if(length == 0)
     {
-        length = robotisController->getDevice(id)->getAddrLength(addr);
-        if(length < 0)
-            return false;
+    	length = robotisController->getDevice(id)->getAddrLength(addr);
+        if(length < 0){
+        	return false;
+
+        }
     }
 
-    if(bulkReadData.size() == 0)
-        return false;
-
+    if(bulkReadData.size() == 0){
+    	return false;
+    }
     for(unsigned int i = 0; i < bulkReadData.size(); i++)
     {
         if(bulkReadData[i].id == id)
@@ -153,7 +156,7 @@ bool GroupHandler::getReadData(int id, int addr, long *data, int length)
                 addr < bulkReadData[i].startAddr ||
                 bulkReadData[i].startAddr + bulkReadData[i].dataLength - length < addr)
             {
-                return false;
+            	return false;
             }
 
             switch(length)
@@ -177,6 +180,62 @@ bool GroupHandler::getReadData(int id, int addr, long *data, int length)
             return true;
         }
     }
+
+    return false;
+}
+
+
+bool GroupHandler::getReadCurrent(int id, int addr, long *data, int length)
+{
+	int startAddr = 621;
+	int length_current = 2;
+	int dataLength = 2;
+
+	if(addr <= 0 || length < 0){
+    	std::cerr<<"false 1"<<std::endl;
+    	return false;
+    }
+
+    if(length == 0)
+    {
+    	length = robotisController->getDevice(id)->getAddrLength(addr);
+        if(length < 0){
+        	std::cerr<<"false 2"<<std::endl;
+
+        	return false;
+
+        }
+    }
+
+    if(bulkReadData.size() == 0){
+    	std::cerr<<"false 3"<<std::endl;
+
+    	return false;
+    }
+    for(unsigned int i = 0; i < bulkReadData.size(); i++)
+    {
+        if(bulkReadData[i].id == id)
+        {
+            if (bulkReadData[i].commResult == -1 ||
+                addr < startAddr)
+            {
+            	std::cerr<<"false 5"<<std::endl;
+            	std::cerr<<"start Add "<<startAddr<<std::endl;
+
+            	std::cerr<<"dataLength "<<dataLength <<std::endl;
+            	std::cerr<<"bulckSize "<< bulkReadData.size()<< std::endl;
+            	std::cerr<<"length "<< length << std::endl;
+            	return false;
+            }
+
+            *data = DXL_MAKEWORD(bulkReadData[i].data[addr - startAddr],
+                                                 bulkReadData[i].data[addr - startAddr + 1]);
+            return true;
+        }
+    }
+
+	std::cerr<<"false 6"<<std::endl;
+
     return false;
 }
 

@@ -22,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED system filesystem date_time thread)
 
-add_service_files(FILES GetJointValues.srv SetToolPose.srv Stop.srv HomeArm.srv GetToolPose.srv)
+add_service_files(FILES GetJointValues.srv SetToolPose.srv Stop.srv HomeArm.srv GetToolPose.srv SetToolPosition.srv)
 
 generate_messages(DEPENDENCIES std_msgs)
 
@@ -52,11 +52,6 @@ target_link_libraries(INESC_Robotis_Driver ${catkin_LIBRARIES})
 add_executable(GoToPose_service src/GoToPose_service.cpp src/IK_Solver.cpp src/TrajectoryGenerator.cpp)
 target_link_libraries(GoToPose_service ${catkin_LIBRARIES})
 add_dependencies(GoToPose_service INESC_Robotis_Driver_gencpp)
-
-#add_executable(gotoxyz_client src/gotoxyz_client.cpp)
-#target_link_libraries(gotoxyz_client ${catkin_LIBRARIES})
-#add_dependencies(gotoxyz_client INESC_Robotis_Driver_gencpp)
-
 
 
 ## Specify libraries to link a library or executable target against

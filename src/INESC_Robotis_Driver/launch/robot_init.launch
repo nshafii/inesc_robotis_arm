@@ -16,9 +16,11 @@
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
 <!-- Launch Robot Initializer initial the robot by seting the torque control parameter to be true-->
-<node pkg="cat_manipulator_control" type="my_init_robot" name="init_robot" output="screen"/> 
+<node pkg="cat_manipulator_control" type="my_init_robot" name="init_robot" output="log"/> 
 
 <!-- Launch Go to Pose service Service which has the trajectory planing forward and inverse control-->
-<node pkg="INESC_Robotis_Driver" type="GoToPose_service" name="GoToPose_service" output="log"/> 
+<node pkg="INESC_Robotis_Driver" type="GoToPose_service" name="GoToPose_service" output="screen"/> 
 
+<node pkg="inesc_3_finger_gripper_driver" type="Gripper_driver" name="Gripper_driver" output="screen"/> 
+	
 </launch>

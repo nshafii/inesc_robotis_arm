@@ -220,11 +220,41 @@ void *comm_thread_proc(void *param)
                 {
                     joint_states.name.push_back(controller->getDevice(_id)->getJointName());
                     joint_states.position.push_back(controller->getDevice(_id)->value2Rad(_pos));
+
+
                 }
             }
             joint_states.header.stamp = ros::Time::now();
             joint_states_pub.publish(joint_states);
+
+//            for(int i = 0; i < publish_list.size(); i++)
+//			{
+//				int   _torque    = 0;
+//
+//				int     _id_2     = publish_list[i];
+//				if(grp_handler.getReadCurrent(_id_2, controller->getDevice(_id_2)->ADDR_GOAL_TORQUE, (long int*)&_torque) == true)
+//				{
+//					ROS_ERROR("read_The_current");
+//
+//					ROS_ERROR("the current %i",_torque);
+//
+//				}
+//				else{
+//					ROS_ERROR("It is not possible to read the current");
+//
+//					ROS_ERROR("the port id %i", controller->getDevice(_id_2)->ADDR_GOAL_TORQUE);
+//
+//
+//
+//				}
+//
+//			}
+//			ROS_ERROR("++++++++++++++++++++++++++++++++++");
+
+
+
         }
+
 
         ros::spinOnce();
         control_rate.sleep();

@@ -1,8 +1,10 @@
 #include <ros/ros.h>
 
 #include "INESC_Robotis_Driver/SetToolPose.h"
+#include "INESC_Robotis_Driver/SetToolPosition.h"
 #include "INESC_Robotis_Driver/HomeArm.h"
 #include "INESC_Robotis_Driver/GetToolPose.h"
+#include "INESC_Robotis_Driver/SetToolPosition.h"
 #include "INESC_Robotis_Driver/GetJointValues.h"
 #include "INESC_Robotis_Driver/Stop.h"
 
@@ -52,6 +54,8 @@ double linearVelocity;
 
 bool stop = true;
 
+bool inGoalPose = false;
+
 bool bigRotationChange = false;
 
 void joint_states_callback(const sensor_msgs::JointState::ConstPtr& msg) {
@@ -89,7 +93,7 @@ bool calculateJointValues(Eigen::VectorXd current_joint_angles,
 
   Eigen::Matrix3d rot = rollAngle * pitchAngle * yawAngle;
 
-  std::cout << "Rotation MaTrIx" << std::endl;
+  std::cout << "Rotation Matirx" << std::endl;
   std::cout << rot << std::endl;
 
   if (!r.InverseKinematics(current_joint_angles, xyz_pos, rot,
@@ -140,18 +144,18 @@ bool getToolPos(INESC_Robotis_Driver::GetToolPose::Request &req,
 
   Eigen::MatrixXd rot_tool(3, 3);
   Eigen::Vector3d xyz_pos;
-  Eigen::Vector3d R_P_Y_angles;
+  Eigen::Vector3d R_P_Y_tool;
   r.ForwardKinematics(joint_values, xyz_pos, rot_tool);
 
-  r.rotationMatrixToZYXeuler(rot_tool, R_P_Y_angles);
+  r.rotationMatrixToZYXeuler(rot_tool, R_P_Y_tool);
 
   res.pos_x = xyz_pos(0) ;
   res.pos_y = xyz_pos(1) ;
   res.pos_z = xyz_pos(2) ;
 
-  res.zyx_angle_z= R_P_Y_angles(0);
-  res.zyx_angle_y= R_P_Y_angles(1);
-  res.zyx_angle_x = R_P_Y_angles(2);
+  res.zyx_angle_z= R_P_Y_tool(0);
+  res.zyx_angle_y= R_P_Y_tool(1);
+  res.zyx_angle_x = R_P_Y_tool(2);
 }
 
 bool getJointValues(INESC_Robotis_Driver::GetJointValues::Request &req,
@@ -170,6 +174,8 @@ bool getJointValues(INESC_Robotis_Driver::GetJointValues::Request &req,
 bool setToolPose(INESC_Robotis_Driver::SetToolPose::Request &req,
     INESC_Robotis_Driver::SetToolPose::Response &res) {
 
+  inGoalPose = false;
+
   xyz_pos(0) = req.pos_x;
   xyz_pos(1) = req.pos_y;
   xyz_pos(2) = req.pos_z;
@@ -187,6 +193,43 @@ bool setToolPose(INESC_Robotis_Driver::SetToolPose::Request &req,
     linearVelocity = 0.12;
   else if (req.linear_velocity < 0.0001)
     linearVelocity = 0.000001;
+  else
+    linearVelocity = req.linear_velocity;
+
+  Eigen::VectorXd eff_joint_values(6);
+
+  if (!calculateJointValues(joint_values, xyz_pos, R_P_Y_angles,
+      eff_joint_values, req.linear_velocity)) {
+    ROS_INFO("The Trajectory is not in Feasible Area");
+    stop = true;
+    res.result = 0;
+    goal_eef_pos = cur_eef_pos;
+  } else {
+    stop = false;
+    goal_eef_pos = xyz_pos;
+    res.result = 1;
+  }
+
+  ROS_INFO("request: pos_x=%3.4f, pos_y=%6.4f, pos_z=%3.4f", req.pos_x,
+      req.pos_y, req.pos_z);
+  ROS_INFO("sending back response: [%d]", res.result);
+
+  return true;
+}
+
+bool setToolPosition(INESC_Robotis_Driver::SetToolPosition::Request &req,
+    INESC_Robotis_Driver::SetToolPosition::Response &res) {
+  inGoalPose = false;
+
+  xyz_pos(0) = req.pos_x;
+  xyz_pos(1) = req.pos_y;
+  xyz_pos(2) = req.pos_z;
+  bigRotationChange=false;
+
+  if (req.linear_velocity > 0.12)
+    linearVelocity = 0.12;
+  else if (req.linear_velocity < 0.0001)
+    linearVelocity = 0.01;
   else
     linearVelocity = req.linear_velocity;
 
@@ -283,8 +326,8 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh("~");
 
   R_P_Y_angles(0) =0;
-  R_P_Y_angles(1) =0;
-  R_P_Y_angles(2) =0;
+  R_P_Y_angles(1) =1.57;
+  R_P_Y_angles(2) =3.14;
 
   joint_values.resize(6);
 
@@ -295,7 +338,8 @@ int main(int argc, char **argv) {
       "/controller_joint_states", 1);
 
   ros::ServiceServer service = nh.advertiseService("setToolPose", setToolPose);
-  ROS_INFO("Ready to send joint values");
+
+  ros::ServiceServer setPositionservice = nh.advertiseService("setToolPosition", setToolPosition);
 
   ros::ServiceServer homeArmService = nh.advertiseService("homeArm", homeArm);
 
@@ -313,6 +357,8 @@ int main(int argc, char **argv) {
 
   while (ros::ok()) {
     double secs = ros::Time::now().toSec();
+
+    nh.setParam("/GoToPose_service/inGoalPose", inGoalPose);
 
     ros::spinOnce();
 
@@ -362,7 +408,8 @@ int main(int argc, char **argv) {
 
       double currTime = secs - beginTime;
 
-      if(currTime > 3){
+      double stopTimeForRotation = 2; // it was 3
+      if(currTime > stopTimeForRotation){
         bigRotationChange =false;
       }
 
@@ -383,6 +430,8 @@ int main(int argc, char **argv) {
         std::cout << "cur eef pos: " << cur_eef_pos << std::endl;
         std::cout << "goal Pos: " << goal_eef_pos << std::endl;
         std::cout << "local Pos: " << local_eef_pos << std::endl;
+
+        inGoalPose = true;
       }
 
       ROS_INFO("========THE ROBOT IS MOVING");
@@ -396,9 +445,9 @@ int main(int argc, char **argv) {
       }
     }
     else {
+      inGoalPose = true;
       internalRate = 1;
       ROS_INFO("====== THE ROBOT IS STOPPED");
-
     }
     loop_rate.sleep();
 

@@ -667,6 +667,39 @@ bool IK_Solver::InverseKinematics(Eigen::VectorXd current_joint_angles, Eigen::V
         double r11 = r_matrix(0,0); double r13 = r_matrix(0,2); double r31 = r_matrix(2,0);
         double r23 = r_matrix(1,2); double r32 = r_matrix(2,1); double r33 = r_matrix(2,2);
         double r21 = r_matrix(2,1);
+
+        // from here is added
+/*
+
+        //float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
+        float sy = sqrt(r11 * r11 +  r21 * r21 );
+
+        bool singular = sy < 1e-6; // If
+
+        float x, y, z;
+        if (!singular)
+        {
+        	// theta4 = atan2(R.at<double>(2,1) , R.at<double>(2,2));
+        	theta4 = atan2(r32 , r33);
+
+        	// theta5 = atan2(-R.at<double>(2,0), sy);
+        	theta5 = atan2(-r31, sy);
+        	// theta6 = atan2(R.at<double>(1,0), R.at<double>(0,0));
+        	theta6 = atan2(r21, r11);
+        }
+        else
+        {
+
+        	std::cout<<"singularity R11 = 1 !!!!!!!!!"<<std::endl;
+
+        	//theta4 = atan2(-R.at<double>(1,2), R.at<double>(1,1));
+        	theta4 = atan2(-r23, r22);
+        	theta5 = atan2(-r31, sy);
+        	theta6 = 0;
+        }
+
+*/
+
         if(roundToNdecimalPlaces(r11,5) == 1)
         {
             // what is this else
@@ -1144,3 +1177,47 @@ Eigen::MatrixXd IK_Solver::computeBaseToSphWristPoint_old(double theta1, double 
 
 }
 
+/*
+// Checks if a matrix is a valid rotation matrix.
+bool isRotationMatrix(Mat &R)
+{
+    Mat Rt;
+    transpose(R, Rt);
+    Mat shouldBeIdentity = Rt * R;
+    Mat I = Mat::eye(3,3, shouldBeIdentity.type());
+
+    return  norm(I, shouldBeIdentity) < 1e-6;
+
+}
+
+// Calculates rotation matrix to euler angles
+// The result is the same as MATLAB except the order
+// of the euler angles ( x and z are swapped ).
+Vec3f rotationMatrixToEulerAngles(Mat &R)
+{
+
+    assert(isRotationMatrix(R));
+
+    float sy = sqrt(R.at<double>(0,0) * R.at<double>(0,0) +  R.at<double>(1,0) * R.at<double>(1,0) );
+
+    bool singular = sy < 1e-6; // If
+
+    float x, y, z;
+    if (!singular)
+    {
+        x = atan2(R.at<double>(2,1) , R.at<double>(2,2));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = atan2(R.at<double>(1,0), R.at<double>(0,0));
+    }
+    else
+    {
+        x = atan2(-R.at<double>(1,2), R.at<double>(1,1));
+        y = atan2(-R.at<double>(2,0), sy);
+        z = 0;
+    }
+    return Vec3f(x, y, z);
+
+
+
+}
+*/
