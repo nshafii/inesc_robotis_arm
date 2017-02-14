@@ -24,13 +24,12 @@ add_service_files(FILES Close.srv Open.srv Stop.srv)
 generate_messages(DEPENDENCIES std_msgs)
 
 #Build talker and listener
-include_directories(include 
+include_directories(
 	${catkin_INCLUDE_DIRS} 
 	${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS}) 
 
 catkin_package(
-  INCLUDE_DIRS include
   LIBRARIES inesc_3_finger_gripper_driver
   CATKIN_DEPENDS message_runtime
  )
